@@ -69,6 +69,14 @@ function cometMessageReceivedFromServer(obj) {
   console.log(obj);
   var userId = obj.id;
   updateUserInDom(userId, obj);
+  if(obj.verb !== 'destroyed'){
+    displayFlashActivity(obj);
+  }
+}
+
+function displayFlashActivity(obj){
+  $('.navbar').after("<div class='alert alert-success'>" +obj.data.name + obj.data.action + "</div>");
+  $('.alert').fadeOut(4000);
 }
 
 function updateUserInDom(userId, obj) {
@@ -120,5 +128,22 @@ var UserIndexPage = {
   // Remove the user from the User Administration Page
   destroyUser: function(id) {
     $('tr[data-id="' + id + '"]').remove();
-  }
+  },
+
+  // Add a user to the list of users in the User Administration Page
+  addUser: function(user) {
+    // obj is going to encompass both the new user data as well as the _csrf info from
+    // the layout.ejs file
+    var obj = {
+      user: user.data,
+      _csrf: window.overlord.csrf || ''
+    };
+
+    // Add the template to the bottom of the User Administration Page
+    $( 'tr:last' ).after(
+
+      // This is the path to the templates file
+      JST['assets/templates/addUser.ejs']( obj )
+    );
+  },
 }

@@ -34,7 +34,7 @@ module.exports.policies = {
     create: 'flash',
     show: 'userCanSeeProfile',
     edit: 'userCanSeeProfile',
-    subscribe: 'flash',
+    subscribe: ['flash', 'sessionAuth'],
     update: 'userCanSeeProfile',
     '*' : 'admin'
   }

@@ -32,6 +32,8 @@ module.exports = {
       user.online = true;
       user.save(function (err, user) {
         if (err) return next(err);
+        user.action = ' signed-up and logged in';
+
         User.publishCreate(user);
         res.redirect('/user/show/'+user.id);
       });
@@ -99,6 +101,13 @@ module.exports = {
       if (!user) return next('User doesn\'t exist.');
       User.destroy(req.param('id'), function userDestroyed(err){
         if (err) return next(err);
+
+        User.publishUpdate(user.id, {
+          name: user.name,
+          action : ' has been destroyed'
+        });
+
+
         User.publishDestroy(user.id);
       })
       res.redirect('/user');
@@ -108,6 +117,7 @@ module.exports = {
   subscribe: function(req, res){
     User.find({}).exec(function foundUsers(err, users){
       if(err) return next(err);
+      User.watch(req.socket);
       User.subscribe(req.socket, users);
       res.send(200);
     });
